@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}记录管理 | 主播排班录入系统{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <div class="action-row">
+      <a class="ghost-button inline-button" href="{{ url_for('portal.dashboard') }}">返回首页</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_users') }}">账号管理</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_entry') }}">管理员代录入</a>
+    </div>
+  </section>
+
+  <section class="grid-two">
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Filters</p>
+        <h2>筛选记录</h2>
+      </div>
+      <form method="get" class="filter-grid">
+        <label>
+          <span>月份</span>
+          <input type="month" name="month" value="{{ selected_month }}">
+        </label>
+        <label>
+          <span>日期</span>
+          <input type="date" name="live_date" value="{{ selected_date }}">
+        </label>
+        <label>
+          <span>直播账号搜索</span>
+          <input type="text" name="live_account" value="{{ account_query }}" placeholder="按账号筛选">
+        </label>
+        <label>
+          <span>关键词</span>
+          <input type="text" name="keyword" value="{{ keyword }}" placeholder="主播 / 账号模糊搜索">
+        </label>
+        <label>
+          <span>排序字段</span>
+          <select name="sort">
+            <option value="live_date" {% if sort_key == "live_date" %}selected{% endif %}>直播日期</option>
+            <option value="anchor_name" {% if sort_key == "anchor_name" %}selected{% endif %}>主播</option>
+            <option value="live_account" {% if sort_key == "live_account" %}selected{% endif %}>直播账号</option>
+            <option value="start_time" {% if sort_key == "start_time" %}selected{% endif %}>开始时间</option>
+            <option value="created_at" {% if sort_key == "created_at" %}selected{% endif %}>录入时间</option>
+          </select>
+        </label>
+        <label>
+          <span>排序方向</span>
+          <select name="direction">
+            <option value="desc" {% if direction == "desc" %}selected{% endif %}>降序</option>
+            <option value="asc" {% if direction == "asc" %}selected{% endif %}>升序</option>
+          </select>
+        </label>
+
+        <div class="checkbox-panel full-width">
+          <span>主播勾选</span>
+          <div class="checkbox-list">
+            {% for anchor_name in available_anchors %}
+              <label class="check-chip">
+                <input
+                  type="checkbox"
+                  name="anchor"
+                  value="{{ anchor_name }}"
+                  {% if anchor_name in selected_anchors %}checked{% endif %}
+                >
+                <span>{{ anchor_name }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="action-row full-width">
+          <button type="submit" class="primary-button">应用筛选</button>
+          <a class="ghost-button inline-button" href="{{ url_for('portal.admin_records') }}">重置</a>
+        </div>
+      </form>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Export</p>
+        <h2>导出排班 Excel</h2>
+        <p>管理员需要先选择年份和月份，系统只会导出这个年月范围内的排班记录。</p>
+      </div>
+      <form method="get" action="{{ url_for('portal.export_monthly_schedule') }}" class="form-grid">
+        <label>
+          <span>年份</span>
+          <select name="export_year" required>
+            {% for year in export_year_options %}
+              <option value="{{ year }}" {% if year == selected_export_year %}selected{% endif %}>{{ year }}年</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <span>月份</span>
+          <select name="export_month" required>
+            {% for month in range(1, 13) %}
+              {% set month_value = month|string %}
+              <option value="{{ month }}" {% if month_value == selected_export_month %}selected{% endif %}>{{ month }}月</option>
+            {% endfor %}
+          </select>
+        </label>
+        <div class="action-row full-width">
+          <button type="submit" class="primary-button">下载所选年月 Excel</button>
+        </div>
+      </form>
+    </article>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="eyebrow">Records</p>
+      <h2>排班记录</h2>
+      <p>共 {{ entries|length }} 条</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>日期</th>
+            <th>主播</th>
+            <th>开始</th>
+            <th>结束</th>
+            <th>直播账号</th>
+            <th>录入人</th>
+            <th>录入时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+            <tr>
+              <td>{{ entry.id }}</td>
+              <td>{{ entry.live_date.strftime("%Y-%m-%d") }}</td>
+              <td>{{ entry.anchor_name }}</td>
+              <td>{{ entry.start_time.strftime("%H:%M") }}</td>
+              <td>{{ entry.end_time.strftime("%H:%M") }}</td>
+              <td>{{ entry.live_account }}</td>
+              <td>{{ entry.creator.username }}</td>
+              <td>{{ entry.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+              <td class="table-actions">
+                <a class="ghost-button inline-button compact" href="{{ url_for('portal.edit_record', entry_id=entry.id) }}">编辑</a>
+                <form method="post" action="{{ url_for('portal.delete_record', entry_id=entry.id) }}">
+                  <button type="submit" class="danger-button compact" onclick="return confirm('确认删除这条记录吗？');">删除</button>
+                </form>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="9" class="muted center-text">没有符合条件的记录。</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

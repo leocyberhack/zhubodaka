@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}编辑记录 | 主播排班录入系统{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <div class="action-row">
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_records') }}">返回记录管理</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.dashboard') }}">返回首页</a>
+    </div>
+  </section>
+
+  <section class="card narrow-card">
+    <div class="card-head">
+      <p class="eyebrow">Edit Record</p>
+      <h2>编辑记录 #{{ entry.id }}</h2>
+    </div>
+    <form method="post" class="form-grid">
+      <label>
+        <span>直播日期</span>
+        <input type="date" name="live_date" value="{{ entry.live_date.strftime('%Y-%m-%d') }}" required>
+      </label>
+      <label>
+        <span>直播开始时间</span>
+        <input type="time" name="start_time" value="{{ entry.start_time.strftime('%H:%M') }}" required>
+      </label>
+      <label>
+        <span>直播结束时间</span>
+        <input type="time" name="end_time" value="{{ entry.end_time.strftime('%H:%M') }}" required>
+      </label>
+      <label>
+        <span>主播名</span>
+        <select name="anchor_name" required>
+          {% for anchor_name in known_anchors %}
+            <option value="{{ anchor_name }}" {% if anchor_name == entry.anchor_name %}selected{% endif %}>{{ anchor_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="full-width">
+        <span>直播账号</span>
+        <input type="text" name="live_account" value="{{ entry.live_account }}" required>
+      </label>
+      <div class="action-row full-width">
+        <button type="submit" class="primary-button">保存修改</button>
+        <a class="ghost-button inline-button" href="{{ url_for('portal.admin_records') }}">返回列表</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

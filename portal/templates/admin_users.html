@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}账号管理 | 主播排班录入系统{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <div class="action-row">
+      <a class="ghost-button inline-button" href="{{ url_for('portal.dashboard') }}">返回首页</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_entry') }}">管理员代录入</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_records') }}">查看记录</a>
+    </div>
+  </section>
+
+  <section class="grid-two">
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Create User</p>
+        <h2>创建主播账号</h2>
+      </div>
+      <form method="post" class="form-grid">
+        <label>
+          <span>账号</span>
+          <input type="text" name="username" placeholder="请输入登录账号" required>
+        </label>
+        <label>
+          <span>密码</span>
+          <input type="password" name="password" placeholder="请输入密码" required>
+        </label>
+        <label class="full-width">
+          <span>主播名</span>
+          <input type="text" name="anchor_name" placeholder="请输入主播名" required>
+        </label>
+        <button type="submit" class="primary-button">创建账号</button>
+      </form>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Users</p>
+        <h2>现有账号</h2>
+        <p>新创建或重置过密码的账号，管理员都可以直接查看密码。</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>账号</th>
+              <th>主播名</th>
+              <th>权限</th>
+              <th>密码</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.anchor_name }}</td>
+                <td>{{ "管理员" if user.is_admin else "主播" }}</td>
+                <td>
+                  {% if user.password_plaintext %}
+                    <code>{{ user.password_plaintext }}</code>
+                  {% else %}
+                    <span class="muted">历史账号不可回显</span>
+                  {% endif %}
+                </td>
+                <td>{{ user.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td class="table-actions">
+                  <a class="ghost-button inline-button compact" href="{{ url_for('portal.admin_reset_user_password', user_id=user.id) }}">重置密码</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+{% endblock %}

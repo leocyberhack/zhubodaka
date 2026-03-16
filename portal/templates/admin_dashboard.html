@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}管理员首页 | 主播排班录入系统{% endblock %}
+
+{% block content %}
+  <section class="stats-grid">
+    <article class="stat-card">
+      <span>主播账号数</span>
+      <strong>{{ stats.user_count }}</strong>
+    </article>
+    <article class="stat-card">
+      <span>录入总条数</span>
+      <strong>{{ stats.entry_count }}</strong>
+    </article>
+    <article class="stat-card">
+      <span>已录入日期数</span>
+      <strong>{{ stats.day_count }}</strong>
+    </article>
+  </section>
+
+  <section class="grid-two">
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Users</p>
+        <h2>账号管理</h2>
+        <p>为主播创建登录账号，并设置对应主播名。</p>
+      </div>
+      <a class="primary-button inline-button" href="{{ url_for('portal.admin_users') }}">进入账号管理</a>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Records</p>
+        <h2>记录管理与导出</h2>
+        <p>查看、筛选、编辑、删除排班记录，并下载某个月的 Excel 排班表。</p>
+      </div>
+      <a class="primary-button inline-button" href="{{ url_for('portal.admin_records') }}">进入记录管理</a>
+    </article>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <p class="eyebrow">Manual Entry</p>
+      <h2>管理员代录入排班</h2>
+      <p>管理员可以直接为任意已注册主播录入排班，主播名必须从已注册列表中选择。</p>
+    </div>
+    <a class="primary-button inline-button" href="{{ url_for('portal.admin_entry') }}">进入代录入页面</a>
+  </section>
+{% endblock %}

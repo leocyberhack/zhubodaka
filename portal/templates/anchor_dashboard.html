@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}主播录入 | 主播排班录入系统{% endblock %}
+
+{% block content %}
+  <section class="grid-two">
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Entry Form</p>
+        <h2>录入排班</h2>
+        <p>当前登录主播：<strong>{{ current_user.anchor_name }}</strong></p>
+      </div>
+      <form method="post" class="form-grid">
+        <label>
+          <span>直播日期</span>
+          <input type="date" name="live_date" required>
+        </label>
+        <label>
+          <span>直播开始时间</span>
+          <input type="time" name="start_time" required>
+        </label>
+        <label>
+          <span>直播结束时间</span>
+          <input type="time" name="end_time" required>
+        </label>
+        <label class="full-width">
+          <span>直播账号</span>
+          <input type="text" name="live_account" placeholder="请输入直播账号" required>
+        </label>
+        <button type="submit" class="primary-button">提交排班</button>
+      </form>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <p class="eyebrow">Recent Entries</p>
+        <h2>最近录入</h2>
+      </div>
+      {% if recent_entries %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>开始</th>
+                <th>结束</th>
+                <th>直播账号</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in recent_entries %}
+                <tr>
+                  <td>{{ entry.live_date.strftime("%Y-%m-%d") }}</td>
+                  <td>{{ entry.start_time.strftime("%H:%M") }}</td>
+                  <td>{{ entry.end_time.strftime("%H:%M") }}</td>
+                  <td>{{ entry.live_account }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="muted">还没有录入记录。</p>
+      {% endif %}
+    </article>
+  </section>
+{% endblock %}

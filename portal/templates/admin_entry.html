@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}管理员代录入 | 主播排班录入系统{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <div class="action-row">
+      <a class="ghost-button inline-button" href="{{ url_for('portal.dashboard') }}">返回首页</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_users') }}">账号管理</a>
+      <a class="ghost-button inline-button" href="{{ url_for('portal.admin_records') }}">记录管理</a>
+    </div>
+  </section>
+
+  <section class="card narrow-card">
+    <div class="card-head">
+      <p class="eyebrow">Manual Entry</p>
+      <h2>管理员代录入排班</h2>
+      <p>主播名只能从已注册主播中选择，不能手动输入。</p>
+    </div>
+
+    {% if known_anchors %}
+      <form method="post" class="form-grid">
+        <label class="full-width">
+          <span>主播名</span>
+          <select name="anchor_name" required>
+            <option value="">请选择主播</option>
+            {% for anchor_name in known_anchors %}
+              <option value="{{ anchor_name }}">{{ anchor_name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <span>直播日期</span>
+          <input type="date" name="live_date" required>
+        </label>
+        <label>
+          <span>直播开始时间</span>
+          <input type="time" name="start_time" required>
+        </label>
+        <label>
+          <span>直播结束时间</span>
+          <input type="time" name="end_time" required>
+        </label>
+        <label class="full-width">
+          <span>直播账号</span>
+          <input type="text" name="live_account" placeholder="请输入直播账号" required>
+        </label>
+        <button type="submit" class="primary-button">提交排班</button>
+      </form>
+    {% else %}
+      <p class="muted">当前还没有已注册主播，请先去账号管理创建主播账号。</p>
+    {% endif %}
+  </section>
+{% endblock %}
