@@ -161,6 +161,21 @@ def dashboard():
     return render_template("anchor_dashboard.html", recent_entries=recent_entries)
 
 
+@portal_bp.route("/entries/<int:entry_id>/delete", methods=["POST"])
+@login_required
+def delete_own_entry(entry_id):
+    entry = ScheduleEntry.query.get_or_404(entry_id)
+
+    if entry.created_by_user_id != g.user.id:
+        flash("你只能删除自己录入的记录。", "danger")
+        return redirect(url_for("portal.dashboard"))
+
+    db.session.delete(entry)
+    db.session.commit()
+    flash("记录已删除。", "success")
+    return redirect(url_for("portal.dashboard"))
+
+
 @portal_bp.route("/admin/entry", methods=["GET", "POST"])
 @admin_required
 def admin_entry():

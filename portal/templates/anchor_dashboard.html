@@ -35,6 +35,7 @@
       <div class="card-head">
         <p class="eyebrow">Recent Entries</p>
         <h2>最近录入</h2>
+        <p>这里只显示当前账号自己录入的记录，你可以删除误录数据。</p>
       </div>
       {% if recent_entries %}
         <div class="table-wrap">
@@ -45,6 +46,7 @@
                 <th>开始</th>
                 <th>结束</th>
                 <th>直播账号</th>
+                <th>操作</th>
               </tr>
             </thead>
             <tbody>
@@ -54,6 +56,11 @@
                   <td>{{ entry.start_time.strftime("%H:%M") }}</td>
                   <td>{{ entry.end_time.strftime("%H:%M") }}</td>
                   <td>{{ entry.live_account }}</td>
+                  <td class="table-actions">
+                    <form method="post" action="{{ url_for('portal.delete_own_entry', entry_id=entry.id) }}">
+                      <button type="submit" class="danger-button compact" onclick="return confirm('确认删除这条自己录入的记录吗？');">删除</button>
+                    </form>
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
